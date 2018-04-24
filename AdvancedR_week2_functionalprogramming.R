@@ -413,3 +413,4 @@ legend(1, 300000, c("Not Memorized", "Memoized"), pch = 18,
 
 #As you can see as higher Fibonacci numbers are calculated the time it takes to calculate a number with fib() 
 #   grows exponentially, while the time it takes to do the same task with fib_mem() stays constant.
+
