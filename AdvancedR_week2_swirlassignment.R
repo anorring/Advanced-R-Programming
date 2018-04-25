@@ -22,7 +22,7 @@
 #In the purrr package the map() function returns a list, while the map_lgl(), map_chr(), and map_dbl() functions
 # return vectors of logical values, strings, or numbers respectively.
 
-map_chr(c(2,3,4), int_to_string)
+map_chr(c(5,3,4), int_to_string)
 
 #Think about evaluating the int_to_string() function with just one of the arguments in the specified numeric vector,
 # and then combining all of those function results into one vector. That's essentially how the map functions work!
@@ -96,3 +96,70 @@ reduce_right(c("a", "b", "c", "d"), paste_talk)
 ## SEARCH
 ######################################################################################################################
 
+#You can search for specific elements of a vector using the has_element() and detect() functions. has_element() will
+#   return TRUE if a specified element is present in a vector, otherwise it returns FALSE.
+#Use the has_element() function to see if the vector random_ints contains the number 45.
+
+has_element(random_ints, 45)
+
+#The detect() function takes a vector and a predicate function as arguments and it returns the first element of the
+# vector for which the predicate function returns TRUE. Use detect() and is_even() to find the first element of
+# random_ints that is an even number.
+
+detect(random_ints, is_even)
+
+#The detect_index() function takes the same arguments as detect(), however it returns the index of the provided
+# vector which contains the first element that satisfies the predicate function. Use detect_index() and is_even() to
+# find the index of the first element of random_ints that is an even number.
+
+detect_index(random_ints, is_even)
+
+######################################################################################################################
+## FILTER
+######################################################################################################################
+
+#The group of functions that includes keep(), discard(), every(), and some() are known as filter functions. Each of
+# these functions takes a vector and a predicate function as arguments.
+
+#For keep() only the elements of the vector that satisfy the predicate function are returned while all other elements
+# are removed. Use the keep() function with random_ints and is_even() to extract the even elements of random_ints.
+
+keep(random_ints, is_even)
+
+#The discard() function works similarly, it only returns elements that don't satisfy the predicate function. Use
+# discard() to filter out the even elements of random_ints.
+
+discard(random_ints, is_even)
+
+#The every() function returns TRUE only if every element in the vector satisfies the predicate function, while the
+# some() function returns TRUE if at least one element in the vector satisfies the predicate function. Use every() to
+# see if every value of random_ints is less than 100.
+
+every(random_ints, function(x){    ##are all values even?
+  x <= 100
+})
+
+######################################################################################################################
+## OTHER
+######################################################################################################################
+
+#Finally let's talk about two functions - partial() and walk().
+
+#Partial application of functions can allow functions to behave a little like data structures. Using the partial()
+# function from the purrr package you can specify some of the arguments of a function, and then partial() will return
+# a function that only takes the unspecified arguments. Use partial() to create a new function caled gt_10 which
+# returns TRUE if its only argument is greater than ten and FALSE otherwise.
+
+gt_10 <- partial(gt, b = 10)
+gt_10(11)
+
+#Side effects of functions occur whenever a function interacts with the "outside world" - reading or writing data,
+# printing to the console, and displaying a graph are all side effects. The results of side effects are one of the
+# main motivations for writing code in the first place! Side effects can be tricky to handle though, since the order
+# in which functions with side effects are executed often matters and there are variables that are external to the
+# program (the relative location of some data).
+
+#If you want to evaluate a function across a data structure you should use the walk() function from purrr. Use walk()
+# across the vector called mark_antony with the message function.
+
+walk(mark_antony, message)
