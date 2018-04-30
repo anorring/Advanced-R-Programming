@@ -18,24 +18,6 @@ library(ggplot2)
 ### INSTRUCTIONS
 ######################################################################################################################
 
-#The overall purpose of this assessment is to evaluate your ability to apply functional programming and object 
-#   oriented programming concepts in R. There are two parts to this assignment. The first part compares different 
-#   functional programming techniques and benchmarks their performance. The second part uses object-oriented 
-#   programming techniques to define a class to represent longitudinal data and provide a set of functions for 
-#   interacting with such data.
-
-### REVIEW CRITERIA
-
-#For both parts of this assignment you are required to write R code and to produce some analysis or output. You will
-#   be assessed on both the R code and the quality/accuracy of the output.
-
-#Please note that you should never execute someone else's R code. Evaluation of R code should be done via inspecting
-#   the code itself and by making your best assessment as to whether the code satisfies the rubric provided.
-
-#For each part you will need to prepare a script file and an output file. The script file contains your code 
-#   (i.e. functions, definitions) and the output file contains the output/analysis obtained by running your code. 
-#   You will be evaluated on both the quality of the code and the appropriateness of the output.
-
 ######################################################################################################################
 ### STEP-BY-STEP ASSIGNMENT INSTRUCTIONS
 ######################################################################################################################
@@ -50,10 +32,69 @@ library(ggplot2)
 #For this Part you will need to write four different versions of the Factorial function:
 
 #   1. Factorial_loop: a version that computes the factorial of an integer using looping (such as a for loop)
+
+factorial_loop <- function(n) {
+  f <- 1
+  for(i in 1:n) {
+    f <- f*((1:n)[i])
+  }
+  print(f)}
+
+factorial_loop <- function(n) {   ## My function takes one input, n  
+  if (n == 0){                    ## If n equals 0, function returns 1, which is defined as the factorial of 0.
+    1
+  } else {                        ## Otherwise the function performs a for loop that assigns each value in sequence 
+    f <- 1                        ##    1:n 
+    for(i in 1:6) {
+      print(f <- f*i)
+    }
+    print(f)
+  }
+}
+
+factorial_loop <- function(n){
+  if (n == 0){                  ## The factorial of 0 is defined to be 1.
+    1
+  }else{
+    f <- 1
+    for(i in 1:n){
+      f <-f*i
+    }
+    print(f)
+  }
+}
+
+# Check that the functions work:
+factorial(6)
+factorial_loop(6)
+
 #   2. Factorial_reduce: a version that computes the factorial using the reduce() function in the purrr package. 
 #         Alternatively, you can use the Reduce() function in the base package.
+
+factorial_reduce <- function(n) {
+reduce(c(1:n), function(n, f){
+  
+})  
+}
+
+reduce(c(1, 3, 5, 7), function(x, y){
+  message("x is ", x)
+  message("y is ", y)
+  message("")
+  x + y
+})
+
+
+# Check that the functions work:
+factorial(6)
+factorial_reduce(6)
+
 #   3. Factorial_func: a version that uses recursion to compute the factorial.
 #   4. Factorial_mem: a version that uses memoization to compute the factorial.
+
+
+
+
 
 #After writing your four versions of the Factorial function, use the microbenchmark package to time the operation of
 #   these functions and provide a summary of their performance. In addition to timing your functions for specific 
