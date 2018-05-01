@@ -69,7 +69,7 @@ factorial_reduce(8)
 # Solving factorial recursively means that we build on the previous iteration of the problem until the initial 
 #   condition is met. 
 
-factorial_func <- function(n) {   ## My function takes one input, n  
+factorial_func <- function(n) {     ## My function takes one input, n  
   if (n == 0){                      ## If n equals 0, function returns 1, which is defined as the factorial of 0.
     f <- 1  
   } else {                          ## Otherwise the function...
@@ -86,19 +86,31 @@ factorial_func(8)
 #   4. Factorial_mem: a version that uses memoization to compute the factorial.
 
 # Memoization works a bit like the recursive method, but it instead stores the results by using extra memory space. 
+#   This means that there will be no duplicate computation as there is in the recursive method. Memoization stores
+#   each calculated value in a table so that once a number is calculated the function can look it up instead of 
+#   needing to recalculate it.
 
-factorial_aux <- c (1, rep(NA, 24))
+###Below is an example of a function that can calculate the first 25 Fibonacci numbers. First we’ll create a very 
+#   simple table which is just a vector containing 0, 1, and then 23 NAs. First the fib_mem()function will check if 
+#   the number is in the table, and if it is then it is returned. Otherwise the Fibonacci number is recursively 
+#   calculated and stored in the table. Notice that we’re using the complex assignment operator <<- in order to 
+#   modify the table outside the scope of the function. You’ll learn more about the complex operator in the section 
+#   titled Expressions & Environments.
+
+# 
+
+fac_tbl <- c (1, rep(NA, 24))       ##
 
 factorial_mem <- function(n) {
   stopifnot(n >= 0)
   if (n == 0){
     1
   }else{
-    if(!is.na(factorial_aux[n])){
-      factorial_aux[n]
+    if(!is.na(fac_tbl[n])){
+      fac_tbl[n]
     } else {
-      factorial_aux[n-1] <<- factorial_mem(n-1)
-      n * factorial_aux[n-1]
+      fac_tbl[n-1] <<- factorial_mem(n-1)
+      n * fac_tbl[n-1]
     }
   }
 }

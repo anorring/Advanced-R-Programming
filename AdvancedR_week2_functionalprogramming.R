@@ -345,7 +345,7 @@ fib(7)
 map_dbl(1:12, fib)
 
 #Looks like it’s working well! There is one optimization that we could apply here which comes up in recursive 
-#   programming often. When you execute the function fib(6), within that function you’ll executefib(5) and fib(4). 
+#   programming often. When you execute the function fib(6), within that function you’ll execute fib(5) and fib(4). 
 #   Then within the execution of fib(5),fib(4) will be executed again.
 
 #This duplication of computation slows down your program significantly as you calculate larger numbers in the 
