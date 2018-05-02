@@ -13,6 +13,7 @@ library(readr)
 library(lubridate)
 library(ggplot2)
 library(purrr)
+library(microbenchmark)
 
 ######################################################################################################################
 ### PART 1: FACTORIAL FUNCTION
@@ -115,6 +116,17 @@ factorial_mem(8)
 #After writing your four versions of the Factorial function, use the microbenchmark package to time the operation of
 #   these functions and provide a summary of their performance. In addition to timing your functions for specific 
 #   inputs, make sure to show a range of inputs in order to demonstrate the timing of each function for larger inputs.
+
+evaluate_by_microbenchmark <- function(n){
+  record_temp_perf <- summary(microbenchmark(factorial_loop(n), 
+                                             factorial_reduce(n),
+                                             factorial_func(n),
+                                             factorial_mem(n)))
+  record_temp_perf.df <- data.frame(record_temp_perf)
+  print(record_temp_perf.df)
+}
+
+
 
 #In order to submit this assignment, please prepare two files:
 #   1. factorial_code.R: an R script file that contains the code implementing your classes, methods, and generics for
