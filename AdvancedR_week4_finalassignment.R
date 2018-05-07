@@ -19,11 +19,13 @@ library(microbenchmark)
 ### PART 1: FACTORIAL FUNCTION
 ######################################################################################################################
 
-# My four different versions of the Factorial function:
+######################################################################################################################
+# MY FOUR DIFFERENT VERSIONS OF THE FACTORIAL FUNCTION:
 
 #   1. Factorial_loop: a version that computes the factorial of an integer using looping (such as a for loop)
 
 factorial_loop <- function(n) {     ## My function takes one input, n  
+  stopifnot(n >= 0)                 ## It requires n to be non-negative
   if (n == 0){                      ## If n equals 0, function returns 1, which is defined as the factorial of 0
     f <- 1                        
   } else {                          ## Otherwise the function...
@@ -49,6 +51,7 @@ factorial_loop(8)
 #   single value.
 
 factorial_reduce <- function(n) {   ## My function takes one input, n  
+  stopifnot(n >= 0)                 ## It requires n to be non-negative
   if (n == 0){                      ## If n equals 0, function returns 1, which is defined as the factorial of 0
     f <- 1  
     print(f)                        ## Prints the value of f (reduce prints by default)
@@ -70,7 +73,8 @@ factorial_reduce(8)
 # Solving factorial recursively means that we build on the previous iteration of the problem until the initial 
 #   condition is met. 
 
-factorial_func <- function(n) {     ## My function takes one input, n  
+factorial_func <- function(n) {     ## My function takes one input, n
+  stopifnot(n >= 0)                 ## It requires n to be non-negative
   if (n == 0){                      ## If n equals 0, function returns 1, which is defined as the factorial of 0
     f <- 1  
   } else {                          ## Otherwise the function...
@@ -113,18 +117,30 @@ factorial_mem(0)
 factorial(8)
 factorial_mem(8)
 
+######################################################################################################################
+# EVALUATION USING THE MICROBENCHMARK:
+
 #After writing your four versions of the Factorial function, use the microbenchmark package to time the operation of
 #   these functions and provide a summary of their performance. In addition to timing your functions for specific 
 #   inputs, make sure to show a range of inputs in order to demonstrate the timing of each function for larger inputs.
 
 evaluate_by_microbenchmark <- function(n){
-  record_temp_perf <- summary(microbenchmark(factorial_loop(n), 
-                                             factorial_reduce(n),
-                                             factorial_func(n),
-                                             factorial_mem(n)))
-  record_temp_perf.df <- data.frame(record_temp_perf)
-  print(record_temp_perf.df)
+  factorial_perf <- microbenchmark(factorial_loop(n), 
+                                   factorial_reduce(n),
+                                   factorial_func(n),
+                                   factorial_mem(n))
+  factorial_perf
 }
+
+evaluate_by_microbenchmark(2) 
+autoplot.microbenchmark(evaluate_by_microbenchmark(2))
+
+evaluate_by_microbenchmark(12) 
+autoplot.microbenchmark(evaluate_by_microbenchmark(12))
+
+evaluate_by_microbenchmark(22) 
+autoplot.microbenchmark(evaluate_by_microbenchmark(22))
+
 
 
 
