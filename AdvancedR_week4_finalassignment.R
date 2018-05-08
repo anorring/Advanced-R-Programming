@@ -135,8 +135,13 @@ evaluate_by_microbenchmark <- function(n){
 evaluate_by_microbenchmark(2) 
 autoplot.microbenchmark(evaluate_by_microbenchmark(2))
 
+#The function using memoiziation is significantly faster than the other methods. The function that solves the problem
+#   recursively is also clearly faster than the ones that use loop and reduce. 
+
 evaluate_by_microbenchmark(12) 
 autoplot.microbenchmark(evaluate_by_microbenchmark(12))
+
+#The memoiziation function remains clearly the fastest, but now the one using 
 
 evaluate_by_microbenchmark(22) 
 autoplot.microbenchmark(evaluate_by_microbenchmark(22))
