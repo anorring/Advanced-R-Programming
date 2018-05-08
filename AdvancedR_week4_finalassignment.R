@@ -120,34 +120,89 @@ factorial_mem(8)
 ######################################################################################################################
 # EVALUATION USING THE MICROBENCHMARK:
 
-#After writing your four versions of the Factorial function, use the microbenchmark package to time the operation of
-#   these functions and provide a summary of their performance. In addition to timing your functions for specific 
-#   inputs, make sure to show a range of inputs in order to demonstrate the timing of each function for larger inputs.
+#The microbenchmark package can be used to compare functions that take the same inputs and produce the same outputs in 
+#   order to find which version of the function is the most efficient to run in terms of time consumed. The 
+#   microbenchmark function from this package will run code multiple times (100 times is the default) and provide 
+#   summary statistics describing how long the code took to run across those iterations.
+
+#The function below evaluates my four different factorial functions and prints out the summary statistics once it is
+#   given a value for inout n (note that the function also prints out the somewhat unnecessary results of the code):
 
 evaluate_by_microbenchmark <- function(n){
-  factorial_perf <- microbenchmark(factorial_loop(n), 
+  factorial_perf <- summary(microbenchmark(factorial_loop(n), 
                                    factorial_reduce(n),
                                    factorial_func(n),
-                                   factorial_mem(n))
-  factorial_perf
+                                   factorial_mem(n)))
+  factorial_perf.df <- data.frame(factorial_perf)
+  print(factorial_perf.df)
 }
+
+#Let's first compare the functions' performance using a small n:
 
 evaluate_by_microbenchmark(2) 
 autoplot.microbenchmark(evaluate_by_microbenchmark(2))
 
-#The function using memoiziation is significantly faster than the other methods. The function that solves the problem
-#   recursively is also clearly faster than the ones that use loop and reduce. 
+#The function using memoization is significantly faster than the other methods. The function that solves the problem
+#   recursively is also clearly faster than the ones that use loop and reduce, which perform the task in about the same
+#   amount of time.
+
+#The results change quite interestingly when we use a bigger value for n:
 
 evaluate_by_microbenchmark(12) 
 autoplot.microbenchmark(evaluate_by_microbenchmark(12))
 
-#The memoiziation function remains clearly the fastest, but now the one using 
+#The time spent by the function making use of memoization and the function using a for loop changes hardly at all. The 
+#   reduce method takes a marginally longer time to complete the task. But the recursive method now takes almost five
+#   times as long as it did before. 
+
+#Let's try an even larger value for n:
 
 evaluate_by_microbenchmark(22) 
 autoplot.microbenchmark(evaluate_by_microbenchmark(22))
 
+#Now it seems that we have hit the limits of my computer as we run into overflow warnings. Still we can see the summary 
+#   statistics of the comparison and the differences between the methods become ever clearer. The factorial_mem() 
+#   function is by far the most efficient of the three in terms of time spent. The factorial_loop() should be called 
+#   the second best of the functions, because it's efficiency hardly changes regardless of the size of n. It would be
+#   interesting to see with a more powerful computer if the time spent by factorial_loop() changes at some high level
+#   of n. The factorial_reduce() and factorial_func() that make use of reduce and recursive method respectively are 
+#   much more sensitive to the level of n. 
+
+#Let's still write a for loop for testing a range of different inputs:
+
+for (i in 1:12){
+  evaluate_by_microbenchmark(i)
+}
 
 
+######
+
+factorial_loop_data <- map(1:10, function(n){microbenchmark(factorial_loop(n), times = 100)$time})
+names(factorial_loop_data) <- paste0(letters[1:10], 1:10)
+factorial_loop_data <- as.data.frame(factorial_loop_data)
+
+factorial_loop_data %<>%
+  gather(num, time) %>%
+  group_by(num) %>%
+  summarise(med_time = median(time))
+
+factorial_reduce_data <- map(1:10, function(n){microbenchmark(factorial_reduce(n), times = 100)$time})
+names(factorial_reduce_data) <- paste0(letters[1:10], 1:10)
+factorial_reduce_data <- as.data.frame(factorial_reduce_data)
+
+factorial_reduce_data %<>%
+  gather(num, time) %>%
+  group_by(num) %>%
+  summarise(med_time = median(time))
+
+factorial_func_data <- map(1:10, function(n){microbenchmark(factorial_func(n), times = 100)$time})
+names(factorial_func_data) <- paste0(letters[1:10], 1:10)
+factorial_func_data <- as.data.frame(factorial_func_data)
+
+factorial_func_data %<>%
+  gather(num, time) %>%
+  group_by(num) %>%
+  summarise(med_time = median(time))
 
 #In order to submit this assignment, please prepare two files:
 #   1. factorial_code.R: an R script file that contains the code implementing your classes, methods, and generics for
