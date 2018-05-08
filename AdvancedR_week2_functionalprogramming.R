@@ -397,6 +397,7 @@ fib_data %<>%
 memo_data <- map(1:10, function(x){microbenchmark(fib_mem(x))$time})
 names(memo_data) <- paste0(letters[1:10], 1:10)
 memo_data <- as.data.frame(memo_data)
+memo_data
 
 memo_data %<>%
   gather(num, time) %>%

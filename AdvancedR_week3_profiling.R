@@ -40,10 +40,10 @@ library(ggplot2)
 ######################################################################################################################
 
 #The microbenchmark package is useful for running small sections of code to assess performance, as well as for 
-#   comparing the speed of several functions that do the same thing. The microbenchmarkfunction from this package 
+#   comparing the speed of several functions that do the same thing. The microbenchmark function from this package 
 #   will run code multiple times (100 times is the default) and provide summary statistics describing how long the
 #   code took to run across those iterations. The process of timing a function takes a certain amount of time itself.
-#   The microbenchmarkfunction adjusts for this overhead time by running a certain number of “warm-up” iterations 
+#   The microbenchmark function adjusts for this overhead time by running a certain number of “warm-up” iterations 
 #   before running the iterations used to time the code.
 
 #You can use the times argument in microbenchmark to customize how many iterations are used. For example, if you are
@@ -51,7 +51,7 @@ library(ggplot2)
 #   (although with slower or more complex code, it likely will make more sense to use a different tool for profiling,
 #   likeprofvis).
 
-#You can include multiple lines of code within a single call tomicrobenchmark. However, to get separate benchmarks 
+#You can include multiple lines of code within a single call to microbenchmark. However, to get separate benchmarks 
 #   of line of code, you must separate each line by a comma:
 
 library(microbenchmark)
