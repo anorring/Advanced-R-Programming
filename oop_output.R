@@ -35,3 +35,4 @@ print(out)
 
 out <- subject(x, 44) %>% visit(1) %>% room("living room") %>% summary
 print(out)
+

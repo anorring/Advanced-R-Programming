@@ -10,6 +10,7 @@ library(tidyr)
 library(readxl)
 library(stringr)
 library(readr)
+library(magrittr)
 library(lubridate)
 library(ggplot2)
 library(purrr)
@@ -195,55 +196,79 @@ for (i in 1:12){
   evaluate_perf_loop(i)
 }
 
-
-#In order to submit this assignment, please prepare two files:
-#   1. factorial_code.R: an R script file that contains the code implementing your classes, methods, and generics for
-#         the longitudinal dataset.
-#   2. factorial_output.txt: a text file that contains the results of your comparison of the four different 
-#         implementations.
-
 ######################################################################################################################
 ## PART 2: LONGITUDINAL DATA CLASS AND METHODS
 ######################################################################################################################
 
-#The purpose of this part is to create a new class for representing longitudinal data, which is data that is 
-#   collected over time on a given subject/person. This data may be collected at multiple visits, in multiple 
-#   locations. You will need to write a series of generics and methods for interacting with this kind of data.
+#In this part we write a series of generics and methods for interacting with longitudinal data. I use the S3 system.
 
-#The data for this part come from a small study on indoor air pollution on 10 subjects. Each subject was visited 3 
-#   times for data collection. Indoor air pollution was measured using a high-resolution monitor which records 
-#   pollutant levels every 5 minutes and the monitor was placed in the home for about 1 week. In addition to 
-#   measuring pollutant levels in the bedroom, a separate monitor was usually placed in another room in the house at
-#   roughly the same time.
+#A class called “LongitudinalData” that characterizes the structure of this longitudinal dataset:
 
-#Before doing this part you may want to review the section on object oriented programming 
-#   (https://bookdown.org/rdpeng/RProgDA/object-oriented-programming.html).
+LongitudinalData <- function(df) {
+  structure(list(df = df), class = "LongitudinalData")
+}
 
-#Data: https://www.coursera.org/learn/advanced-r/peer/98rUI/functional-and-object-oriented-programming
+#First function to be implemented: make_LD() converts a data frame into a “LongitudinalData” object
 
-#The variables in the dataset are
-#     id: the subject identification number
-#     visit: the visit number which can be 0, 1, or 2
-#     room: the room in which the monitor was placed
-#     value: the level of pollution in micrograms per cubic meter
-#     timepoint: the time point of the monitor value for a given visit/room
+make_LD <- function(df) UseMethod("make_LD")
 
-#You will need to design a class called “LongitudinalData” that characterizes the structure of this longitudinal 
-#   dataset. You will also need to design classes to represent the concept of a “subject”, a “visit”, and a “room”.
+make_LD <- function(df) {
+  LongitudinalData(df)
+}
 
-#In addition you will need to implement the following functions
-#     1. make_LD: a function that converts a data frame into a “LongitudinalData” object
-#     2. subject: a generic function for extracting subject-specific information
-#     3. visit: a generic function for extracting visit-specific information
-#     4. room: a generic function for extracting room-specific information
+#Second function to be implemented: subject() is a generic function for extracting subject-specific information
 
-#For each generic/class combination you will need to implement a method, although not all combinations are 
-#   necessary (see below). You will also need to write print and summary methods for some classes (again, see below).
+subject <- function(x, subj_index) {
+  subj_df <- filter(x$df, id == subj_index)
+  structure(list(id = subj_df$id[1], subj_df = subj_df), class = "subject")
+}
 
-#To complete this Part, you can use either the S3 system, the S4 system, or the reference class system to implement 
-#   the necessary functions. It is probably not wise to mix any of the systems together, but you should be able to
-#   compete the assignment using any of the three systems. The amount of work required should be the same when using
-#   any of the systems.
+#For subject() we need to implement also the print and summary methods:
+
+print.subject <- function(s) {
+  cat("Subject ID:", s$id)
+}
+
+summary.subject <- function(s) {
+  structure(list(s = s), class="subjectSummary")
+}
+
+print.subjectSummary <- function(ss) {
+  summary_df <- ss$s$subj_df %>% group_by(visit, room) %>% select(visit, room, value) %>% summarize(value=mean(value)) %>% spread(room, value)
+  print(paste("ID:", ss$s$id))
+  print(summary_df)
+}
+
+#Third function to be implemented: visit() is a generic function for extracting visit-specific information
+
+visit <- function(s, visit_index) {
+  structure(list(subj = s, visit_df = filter(s$subj_df, visit == visit_index), visit_index = visit_index), class = "visit")
+}
+
+#Fourth function to be implemented: room() is a generic function for extracting room-specific information
+
+room <- function(v, room_type) {
+  structure(list(visit = v, room_df = filter(v$visit_df, room == room_type), room_type = room_type), class = "room")
+}
+
+#For room() we need to implement also the print and summary methods:
+
+print.room <- function(r) {
+  print(paste("ID:", r$v$subj$id))
+  print(paste("Visit:", r$v$visit_index))
+  print(paste("Room:", r$room_type))
+}
+
+summary.room <- function(r) {
+  structure(list(r = r), class="roomSummary")
+}
+
+print.roomSummary <- function(rs) {
+  print(paste("ID:", rs$r$v$subj$id))
+  print(paste("Visit:", rs$r$v$visit_index))
+  print(paste("Room:", rs$r$room_type))
+  print(summary(rs$r$room_df$value))
+}
 
 #For this assessment, you will need to implement the necessary functions to be able to execute the code in the 
 #   following script file:
@@ -285,14 +310,3 @@ out <- subject(x, 44) %>% visit(1) %>% room("living room") %>% summary
 print(out)
 
 ###########
-
-#The output should appear similar to the output in the following file:
-
-#https://d3c33hcgiwev3.cloudfront.net/_6fcb9d2497a51c26f4b0574b63866e21_oop_output.txt?Expires=1524960000&Signature=h8sW6YwIAS9SXbioJp-X0zvnhD1Ndd11le-ruYzTEXsGkqaoMrfvtouU1pX1Sd0J0KC31VON2J-IOWlK0~~Nt0OCMlc9uaI7LDn6crwVwdfRvKEBaau0Nm37QYVnudNVsO3iDzHEqQA~jbTFBtkKjp~-YIK9RxeNOHeW6nfxI7c_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A
-
-#The output of your function does not need to match exactly, but it should convey the same information.
-
-#In order to submit this assignment, please prepare two files:
-#     1. oop_code.R: an R script file that contains the code implementing your classes, methods, and generics for 
-#                     the longitudinal dataset.
-#     2. oop_output.txt: a text file containing the output of running the above input code.

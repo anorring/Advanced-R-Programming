@@ -1,0 +1,85 @@
+> ## Read in the data
+> library(readr)
+> library(magrittr)
+> ## Set the correct directory
+> setwd("/Users/anninorring/Documents/GitHub/Advanced-R-Programming_course")
+> source("oop_code.R")
+> data <- read_csv("MIE.csv")
+Parsed with column specification:
+cols(
+  id = col_integer(),
+  visit = col_integer(),
+  room = col_character(),
+  value = col_double(),
+  timepoint = col_integer()
+)
+> x <- make_LD(data)
+> print(class(x))
+[1] "LongitudinalData"
+> print(x)
+$df
+# A tibble: 120,877 x 5
+      id visit room    value timepoint
+   <int> <int> <chr>   <dbl>     <int>
+ 1    14     0 bedroom  6.00        53
+ 2    14     0 bedroom  6.00        54
+ 3    14     0 bedroom  2.75        55
+ 4    14     0 bedroom  2.75        56
+ 5    14     0 bedroom  2.75        57
+ 6    14     0 bedroom  2.75        58
+ 7    14     0 bedroom  6.00        59
+ 8    14     0 bedroom  6.00        60
+ 9    14     0 bedroom  2.75        61
+10    14     0 bedroom  2.75        62
+# ... with 120,867 more rows
+
+attr(,"class")
+[1] "LongitudinalData"
+> ## Subject 10 doesn't exist
+> out <- subject(x, 10)
+> print(out)
+Subject ID: NA
+> out <- subject(x, 14)
+> print(out)
+Subject ID: 14
+> out <- subject(x, 54) %>% summary
+> print(out)
+[1] "ID: 54"
+# A tibble: 3 x 5
+# Groups:   visit [3]
+  visit bedroom   den `living room` office
+  <int>   <dbl> <dbl>         <dbl>  <dbl>
+1     0   NA    NA             2.79  13.3 
+2     1   NA    13.5          NA      4.53
+3     2    4.19  3.78         NA     NA   
+> out <- subject(x, 14) %>% summary
+> print(out)
+[1] "ID: 14"
+# A tibble: 3 x 4
+# Groups:   visit [3]
+  visit bedroom `family  room` `living room`
+  <int>   <dbl>          <dbl>         <dbl>
+1     0    4.79          NA             2.75
+2     1    3.40           8.43         NA   
+3     2   18.6           NA            22.6 
+> out <- subject(x, 44) %>% visit(0) %>% room("bedroom")
+> print(out)
+[1] "ID: 44"
+[1] "Visit: 0"
+[1] "Room: bedroom"
+> ## Show a summary of the pollutant values
+> out <- subject(x, 44) %>% visit(0) %>% room("bedroom") %>% summary
+> print(out)
+[1] "ID: 44"
+[1] "Visit: 0"
+[1] "Room: bedroom"
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    8.0    30.0    51.0    88.8    80.0   911.0 
+> out <- subject(x, 44) %>% visit(1) %>% room("living room") %>% summary
+> print(out)
+[1] "ID: 44"
+[1] "Visit: 1"
+[1] "Room: living room"
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2.75   14.00   24.00   41.37   37.00 1607.00 
+> 
