@@ -136,7 +136,7 @@ is_square <- function(x) UseMethod("is_square")
 
 #Now we can add the actual function definition for detecting whether or not a shape is a square by specifying 
 #   is_square.shape_S3. By putting a dot (.) and then the name of the class after is_squre, we can create a method
-#   that associates is_squre with the shape_S3 class:
+#   that associates is_square with the shape_S3 class:
   
 is_square.shape_S3 <- function(x){
   length(x$side_lengths) == 4 &&
