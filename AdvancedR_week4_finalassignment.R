@@ -135,7 +135,9 @@ evaluate_perf <- function(n){
   factorial_perf
 }
 
-#Let's first compare the functions' performance using a small n:
+#Let's first compare the functions' performance using a small n. The first row of code below prints the summary 
+#   statistics of the comparison and the second row draws an autoplot of the results which allow for comparing the 
+#   results with a quick glance.
 
 evaluate_perf(2) 
 autoplot.microbenchmark(evaluate_perf(2))
@@ -168,8 +170,15 @@ evaluate_perf(20)
 autoplot.microbenchmark(evaluate_perf(20))
 
 #Now it seems that we have hit the limits of my computer as we run into overflow warnings. Let's find the maximum number
-#   of n my computer can handle by writing a loop. For the loop to print out the summary statistics of each round of 
-#   comparison, we must use a slightly more complicated function for the evaluating function:
+#   of n my computer can handle by trying out different values. Let's start with the average between 10 and 20:
+
+evaluate_perf(15)   #overflow warnings -> try the average between 10 and 15
+evaluate_perf(13)   #overflow warnings -> try the average between 10 and 13
+evaluate_perf(12)   #no warnings
+
+#That is, my computer can compute the microbenchmark function for up to n=12. Let's write a loop that prints out the 
+#   evaluation statistics for the range of inputs from 1 to 12. For the loop to print out the summary statistics of each
+#   round of comparison, we must use a slightly more complicated function for the evaluating function:
 
 evaluate_perf_loop <- function(n){
   factorial_perf_loop <- summary(microbenchmark(factorial_loop(n), 
@@ -180,28 +189,9 @@ evaluate_perf_loop <- function(n){
   print(factorial_perf_loop.df)                                       #prints the data frame
 } 
 
-for (i in 20:10){
-  print(i)
-  evaluate_perf_loop(i)
-  warnings()
-}
-
-
-
-#Let's still write a for loop for testing a range of different inputs: 
-
-evaluate_perf_range <- function(n){
-  factorial_perf_range <- summary(microbenchmark(factorial_loop(n), 
-                                             factorial_reduce(n),
-                                             factorial_func(n),
-                                             factorial_mem(n)))
-  factorial_perf_range.df <- data.frame(factorial_perf_range)
-  print(factorial_perf_range.df)
-} 
-
 for (i in 1:12){
   print(i)
-  evaluate_perf_range(i)
+  evaluate_perf_loop(i)
 }
 
 
