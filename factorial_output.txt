@@ -1,0 +1,236 @@
+> # Access all the needed libraries:
+> library(dplyr)
+> library(purrr)
+> library(ggplot2)
+> library(microbenchmark)
+> factorial_loop <- function(n) {     ## My function takes one input, n  
++   stopifnot(n >= 0)                 ## It requires n to be non-negative
++   if (n == 0){                      ## If n equals 0, function returns 1, which is defined as the factorial of 0
++     f <- 1                        
++   } else {                          ## Otherwise the function...
++     f <- 1                          ## ... sets f equal to one
++     for(i in 1:n) {                 ## ... performs a for loop that iterates over the sequence 1 to n
++       f <- f*i                      ## ... and sets f equal to f (from the previous iteration) times the iterated value
++     } 
++     f
++   } 
++ }
+> # Check that the function works (note that here, in order to see the value of f we need to print it):
+> factorial(0)
+[1] 1
+> factorial_loop(0) %>% print()
+[1] 1
+> factorial(8)
+[1] 40320
+> factorial_loop(8) %>% print()
+[1] 40320
+> factorial_reduce <- function(n) {   ## My function takes one input, n  
++   stopifnot(n >= 0)                 ## It requires n to be non-negative
++   if (n == 0){                      ## If n equals 0, function returns 1, which is defined as the factorial of 0
++     f <- 1  
++     print(f)                        ## Prints the value of f (reduce prints by default)
++   } else {                          ## Otherwise the function...
++     reduce(c(1:n), function(x, y) { ## ... uses reduce to iteratively combine the elements of 1:n ...
++       f <- x * y                    ## ... by applying function(x,y) = x*y to the elements and setting that value
++     })                              ##      equal to f
++   }
++ }
+> # Check that the function works:
+> factorial(0)
+[1] 1
+> factorial_reduce(0)
+[1] 1
+> factorial(8)
+[1] 40320
+> factorial_reduce(8)
+[1] 40320
+> factorial_func <- function(n) {     ## My function takes one input, n
++   stopifnot(n >= 0)                 ## It requires n to be non-negative
++   if (n == 0){                      ## If n equals 0, function returns 1, which is defined as the factorial of 0
++     f <- 1  
++   } else {                          ## Otherwise the function...
++     n * factorial_func(n-1)         ## ... multiplies by n the previous iteration of the problem and returns the result
++   } 
++ }
+> # Check that the function works:
+> factorial(0)
+[1] 1
+> factorial_func(0)
+> factorial(8)
+[1] 40320
+> factorial_func(8)
+[1] 40320
+> fac_tbl <- c (1, rep(NA, 24))             ## Creates a simple table or a vector with 1 as a first element and then
+> ##    24 NAs
+> factorial_mem <- function(n) {            ## My function takes one input, n 
++   stopifnot(n >= 0)                       ## It requires n to be non-negative
++   if (n == 0){                            ## If n equals 0, function returns 1, which is defined as the factorial of 0
++     1
++   } else {                                ## Otherwise the function...
++     if(!is.na(fac_tbl[n])){               ## ... first checks whether the factorial of n is in fac_tbl-table
++       fac_tbl[n]                          ## ... and returns it if it is
++     } else {                              ## Otherwise the function...
++       fac_tbl[n-1] <<- factorial_mem(n-1) ## ... recursively calculates and stores the factorial of n 
++       n * fac_tbl[n-1]                    ##      into the fac_tbl-table (Note that you need to use the complex
++     }                                     ##      assignment operator <<- in order to modify the table outside the
++   }                                       ##      the scope of the function)
++ }
+> # Check that the function works:
+> factorial(0)
+[1] 1
+> factorial_mem(0)
+[1] 1
+> factorial(8)
+[1] 40320
+> factorial_mem(8)
+[1] 40320
+> evaluate_perf <- function(n){
++   factorial_perf <- microbenchmark(factorial_loop(n), 
++                                    factorial_reduce(n),
++                                    factorial_func(n),
++                                    factorial_mem(n))
++   factorial_perf
++ }
+> evaluate_perf(2)
+Unit: microseconds
+                expr    min      lq     mean  median      uq    max neval
+   factorial_loop(n)  4.113  4.4235  4.80072  4.6670  5.0310  9.982   100
+ factorial_reduce(n) 24.639 25.4990 27.11618 25.8640 26.4255 86.686   100
+   factorial_func(n) 11.972 12.8025 13.16332 13.0885 13.5130 17.844   100
+    factorial_mem(n)  4.113  4.4430  4.96392  4.7165  4.9935 27.132   100
+> autoplot.microbenchmark(evaluate_perf(2))
+> evaluate_perf(5)
+Unit: microseconds
+                expr    min      lq     mean  median      uq     max neval
+   factorial_loop(n)  3.924  4.3690  5.87903  4.7690  5.3080  25.841   100
+ factorial_reduce(n) 24.580 25.8055 33.64474 26.5735 31.0175 125.969   100
+   factorial_func(n) 22.639 23.8890 29.43615 24.8400 26.3455  80.231   100
+    factorial_mem(n)  4.000  4.3595  5.32000  4.7185  5.5880  10.576   100
+> autoplot.microbenchmark(evaluate_perf(5))
+> evaluate_perf(10)
+Unit: microseconds
+                expr    min      lq       mean  median      uq        max neval
+   factorial_loop(n)  4.026  4.4310    5.69539  4.6595  5.2145     43.820   100
+ factorial_reduce(n) 26.996 28.3040 2556.77863 29.0630 35.7005 252117.461   100
+   factorial_func(n) 41.862 43.6705   49.04200 44.9035 47.0980    135.911   100
+    factorial_mem(n)  7.912  8.6410   10.70160  9.0690 10.0705     33.949   100
+> autoplot.microbenchmark(evaluate_perf(10))
+> evaluate_perf(20)
+Unit: microseconds
+                expr    min     lq     mean median      uq     max neval
+   factorial_loop(n)  4.165  4.698  5.25761  5.014  5.4610  11.447   100
+ factorial_reduce(n) 55.230 57.795 63.08742 60.459 63.1490 203.749   100
+   factorial_func(n) 80.662 84.332 88.17420 88.009 90.9660 115.703   100
+    factorial_mem(n)  7.999  9.002 10.17835  9.508 10.2775  61.468   100
+There were 50 or more warnings (use warnings() to see the first 50)
+> autoplot.microbenchmark(evaluate_perf(20))
+There were 50 or more warnings (use warnings() to see the first 50)
+> evaluate_perf(15)   #overflow warnings -> try the average between 10 and 15
+Unit: microseconds
+                expr    min      lq     mean  median      uq     max neval
+   factorial_loop(n)  4.149  4.6475  5.83867  4.9950  5.9875  23.228   100
+ factorial_reduce(n) 52.990 55.6255 65.22054 58.6740 62.5515 235.443   100
+   factorial_func(n) 60.847 65.9065 73.08651 67.2470 72.0950 135.481   100
+    factorial_mem(n)  4.043  4.5710  5.41685  4.8035  5.7760  11.523   100
+There were 50 or more warnings (use warnings() to see the first 50)
+> evaluate_perf(13)   #overflow warnings -> try the average between 10 and 13
+Unit: microseconds
+                expr    min      lq     mean  median      uq     max neval
+   factorial_loop(n)  4.346  4.8755  5.39484  5.1300  5.8655   7.963   100
+ factorial_reduce(n) 55.405 57.8035 61.98380 58.9070 60.9120 172.675   100
+   factorial_func(n) 57.429 59.6500 61.64397 61.1745 62.5625  93.154   100
+    factorial_mem(n)  4.184  4.7180  5.55775  4.9630  5.9015  26.038   100
+There were 50 or more warnings (use warnings() to see the first 50)
+> evaluate_perf(12)   #no warnings
+Unit: microseconds
+                expr    min     lq     mean  median      uq     max neval
+   factorial_loop(n)  4.433  4.820  5.26305  5.2495  5.5665   7.930   100
+ factorial_reduce(n) 29.838 30.951 32.79541 31.8220 32.7965 107.366   100
+   factorial_func(n) 53.503 56.271 58.06027 57.8925 58.8775 101.165   100
+    factorial_mem(n)  4.155  4.553  4.92107  4.8430  5.1500   8.125   100
+> evaluate_perf_loop <- function(n){
++   factorial_perf_loop <- summary(microbenchmark(factorial_loop(n), 
++                                                 factorial_reduce(n),
++                                                 factorial_func(n),
++                                                 factorial_mem(n)))   #summarizes the result
++   factorial_perf_loop.df <- data.frame(factorial_perf_loop)           #presents the result as a data frame
++   print(factorial_perf_loop.df)                                       #prints the data frame
++ }
+> for (i in 1:12){
++   print(i)
++   evaluate_perf_loop(i)
++ }
+[1] 1
+                 expr    min      lq     mean  median      uq    max neval
+1   factorial_loop(n)  4.100  4.3640  4.92383  4.5835  5.0845 26.201   100
+2 factorial_reduce(n) 24.301 25.2820 26.42645 25.6435 26.1045 84.636   100
+3   factorial_func(n)  7.919  8.5310  8.85399  8.7815  9.1045 11.431   100
+4    factorial_mem(n)  4.222  4.5235  4.91303  4.7805  5.2170 10.176   100
+[1] 2
+                 expr    min      lq     mean  median      uq     max neval
+1   factorial_loop(n)  4.107  4.5010  4.98486  4.7100  5.1455  18.389   100
+2 factorial_reduce(n) 24.487 25.4095 27.01989 25.9550 26.5885 104.798   100
+3   factorial_func(n) 12.081 12.7840 13.32997 13.2020 13.7160  16.403   100
+4    factorial_mem(n)  4.264  4.5450  4.90810  4.7045  5.1050  11.356   100
+[1] 3
+                 expr    min      lq     mean  median      uq    max neval
+1   factorial_loop(n)  4.286  4.5605  4.86568  4.7345  5.0445  8.971   100
+2 factorial_reduce(n) 25.204 26.0680 27.44964 26.4770 27.3005 86.441   100
+3   factorial_func(n) 16.158 17.1520 17.89331 17.5780 18.2555 32.044   100
+4    factorial_mem(n)  4.257  4.5855  5.03446  4.7515  5.1425 22.490   100
+[1] 4
+                 expr    min      lq     mean  median      uq    max neval
+1   factorial_loop(n)  4.204  4.5090  4.95029  4.7385  5.0630 21.135   100
+2 factorial_reduce(n) 25.686 26.5810 28.16392 26.9990 27.7305 87.767   100
+3   factorial_func(n) 20.330 21.1635 22.26651 21.6620 22.2980 66.588   100
+4    factorial_mem(n)  4.222  4.5240  4.84784  4.7470  5.0930  8.535   100
+[1] 5
+                 expr    min      lq     mean  median      uq     max neval
+1   factorial_loop(n)  4.341  4.7535  5.53958  5.0590  5.5365  14.955   100
+2 factorial_reduce(n) 26.287 27.4855 35.38009 28.2685 32.7985 129.969   100
+3   factorial_func(n) 24.544 25.6260 29.57558 26.5150 28.0885  62.145   100
+4    factorial_mem(n)  4.266  4.6125  5.97033  4.8255  5.5435  41.518   100
+[1] 6
+                 expr    min      lq     mean  median      uq    max neval
+1   factorial_loop(n)  4.303  4.6290  5.04740  4.8935  5.1825  8.239   100
+2 factorial_reduce(n) 26.506 27.7200 29.84864 28.4385 29.1860 98.689   100
+3   factorial_func(n) 27.991 29.8095 32.14799 30.6390 31.7455 72.564   100
+4    factorial_mem(n)  4.297  4.6770  5.09427  4.9705  5.2890  9.926   100
+[1] 7
+                 expr    min      lq     mean  median      uq    max neval
+1   factorial_loop(n)  4.304  4.6025  5.02063  4.9780  5.2990  9.853   100
+2 factorial_reduce(n) 26.928 27.9410 29.73820 28.5620 29.3785 97.012   100
+3   factorial_func(n) 32.312 33.8680 35.26538 34.5030 35.2790 78.005   100
+4    factorial_mem(n)  4.197  4.6530  5.24105  4.8585  5.2240 35.045   100
+[1] 8
+                 expr    min      lq     mean median      uq     max neval
+1   factorial_loop(n)  4.373  4.7125  5.32998  4.899  5.3740  23.488   100
+2 factorial_reduce(n) 27.827 29.0365 33.53242 29.702 30.9160 146.464   100
+3   factorial_func(n) 36.797 38.2840 41.14232 39.521 40.5370 103.194   100
+4    factorial_mem(n)  4.214  4.6665  5.20162  4.907  5.3845  11.135   100
+[1] 9
+                 expr    min      lq     mean  median      uq    max neval
+1   factorial_loop(n)  4.271  4.7140  5.05923  4.8795  5.1520 14.637   100
+2 factorial_reduce(n) 27.555 28.8800 31.00277 29.6015 30.4365 90.662   100
+3   factorial_func(n) 40.749 42.0500 43.11362 43.0045 43.9460 51.104   100
+4    factorial_mem(n)  4.206  4.5645  5.27395  4.8555  5.2370 41.646   100
+[1] 10
+                 expr    min      lq     mean  median      uq    max neval
+1   factorial_loop(n)  4.282  4.7565  5.03536  4.9435  5.2950  8.861   100
+2 factorial_reduce(n) 28.263 29.4305 30.83261 30.1190 30.6970 86.788   100
+3   factorial_func(n) 44.587 46.1490 47.42403 46.8710 48.0455 84.222   100
+4    factorial_mem(n)  4.153  4.5370  4.90325  4.7585  5.2270  7.870   100
+[1] 11
+                 expr    min      lq     mean  median      uq     max neval
+1   factorial_loop(n)  4.360  4.7845  5.07522  5.0295  5.3090   7.967   100
+2 factorial_reduce(n) 28.831 30.1200 31.86953 30.7235 31.4875 119.557   100
+3   factorial_func(n) 48.818 50.2695 51.89282 51.7845 52.7375  66.824   100
+4    factorial_mem(n)  4.194  4.6050  4.89380  4.7895  5.1615   7.576   100
+[1] 12
+                 expr    min      lq     mean  median      uq    max neval                 
+1   factorial_loop(n)  4.452  4.7810  5.09363  5.0360  5.3345  7.808   100
+2 factorial_reduce(n) 29.275 30.3895 31.98120 30.9345 31.8675 89.007   100
+3   factorial_func(n) 52.646 54.6320 56.12972 56.0745 57.3155 63.377   100
+4    factorial_mem(n)  4.218  4.5855  5.20983  4.8080  5.1490 36.228   100
+> 
+                 

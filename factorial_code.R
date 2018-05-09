@@ -6,6 +6,7 @@
 
 # Access all the needed libraries:
 library(dplyr)
+library(purrr)
 library(ggplot2)
 library(microbenchmark)
 
@@ -188,3 +189,5 @@ for (i in 1:12){
   print(i)
   evaluate_perf_loop(i)
 }
+
+######################################################################################################################

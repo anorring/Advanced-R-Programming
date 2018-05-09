@@ -203,8 +203,8 @@ for (i in 1:12){
 #         implementations.
 
 ######################################################################################################################
-
 ## PART 2: LONGITUDINAL DATA CLASS AND METHODS
+######################################################################################################################
 
 #The purpose of this part is to create a new class for representing longitudinal data, which is data that is 
 #   collected over time on a given subject/person. This data may be collected at multiple visits, in multiple 
